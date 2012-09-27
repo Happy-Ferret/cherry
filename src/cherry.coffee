@@ -4,32 +4,40 @@ coffee = require 'coffee-script'
 api    = require './api'
 flow   = require './flow'
 
-command = api[process.argv[2]]
-
-if not command
-  console.error "Wrong command. Available commands:\n\n  #{(_.keys api).join '\n  '}\n"
-  process.exit 1
-
-recipes = []
-
-recipe = (recipe) -> recipes.push recipe
-
 candidates = [
   'Cherryfile'
   'cherry.coffee'
   'Cakefile'
 ]
 
+cherryfile_path = _.find candidates, fs.existsSync
+command = api[process.argv[2]]
+
+requirements = [
+  [ command
+    "Wrong command. Available commands:"
+    _.keys api ]
+  [ cherryfile_path
+    "Need one of the following files with recipes:",
+    candidates ]
+]
+
+met_requirements = true
+for [req, message, alternatives] in requirements
+  if not req
+    console.error message
+    if alternatives
+      console.error "\n  #{alternatives.join '\n  '}\n"
+    met_requirements = false
+
+if not met_requirements then return 1
+
+recipes = []
+recipe = (recipe) -> recipes.push recipe
+
 _.extend global, flow, recipe: recipe
 
-cherryfile_path = _.find candidates, fs.existsSync
-
-if not cherryfile_path
-  console.error "Need one of the following files with recipes: #{candidates.join ', '}"
-  process.exit 1
-
 cherryfile_coffee = fs.readFileSync cherryfile_path, 'utf8'
-
 coffee.run cherryfile_coffee, filename: cherryfile_path
 
 command recipes
