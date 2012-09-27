@@ -1,7 +1,6 @@
 # Put A Cherry On The Cake
 
-General-purpose build system. Integrates with `cake` nicely although can be used outside of it.
-
+General-purpose build system.
 Features:
 
 - Simple recipe syntax
