@@ -1,6 +1,5 @@
-# Put A Cherry On The Cake
+A General-purpose build system.
 
-General-purpose build system.
 Features:
 
 - Simple recipe syntax
@@ -15,7 +14,6 @@ Rationale:
 - Preferred use of JavaScript libraries rather than starting new processes
 - You still can use anything you want to process your files
 - More portable than make & shell-based build system (all dependencies other than node.js contained in your project)
-- Reusing existing simple build framework of `cake`
 - Extensive use of CoffeeScript although there's no reason to not use it in JavaScript
 
 Nomenclature:
