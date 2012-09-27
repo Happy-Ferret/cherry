@@ -1,3 +1,6 @@
+fs = require 'fs'
+_  = require 'underscore'
+
 translate_input_pattern = (pattern) ->
   new RegExp "^#{pattern.replace /\*./g, (match) -> "([^#{match[1]}./]+)\\#{match[1]}"}$"
 
@@ -26,16 +29,16 @@ build_one = (output_path, outputs) ->
   if output.awaiting.length is 0
     console.log "Building #{output_path} from #{output.deps.join(', ')}"
     callback = gen_final_callback output_path, outputs
-    output.recipe.compile callback, output_path, output.deps... # TODO: try catch
+    output.recipe.run callback, output_path, output.deps... # TODO: try catch
   else
     console.log "Target #{output_path} is waiting for #{output.awaiting.join ', '}"
 
 # TODO: getting deps by get_deps should be integrated here before recursion
 group_outputs_inputs = (recipes, paths, outputs = {}) ->
   new_paths = []
-  for recipe in recipes when typeof recipe.compile is 'function'
-    input_pattern  = translate_input_pattern recipe.pattern
-    output_pattern = translate_output_pattern recipe.save_as
+  for recipe in recipes when typeof recipe.run is 'function'
+    input_pattern  = translate_input_pattern recipe.in
+    output_pattern = translate_output_pattern recipe.out
     matching_paths = paths.filter (path) -> input_pattern.test(path)
 
     # Group all inputs by their outputs.
@@ -81,7 +84,15 @@ clean = (outputs) ->
 purify = (recipes, paths) ->
   matching_paths = []
   for recipe in recipes
-    output_pattern = translate_input_pattern recipe.save_as
+    output_pattern = translate_input_pattern recipe.out
     matching_paths = _.union matching_paths, paths.filter (path) -> output_pattern.test(path)
 
   rm path for path in matching_paths
+
+module.exports =
+  scan_dir:             scan_dir
+  group_outputs_inputs: group_outputs_inputs
+  get_outputs_deps:     get_outputs_deps
+  build:                build
+  clean:                clean
+  purify:               purify

@@ -1,4 +1,5 @@
-_ = require 'underscore'
+fs = require 'fs'
+_  = require 'underscore'
 
 flow_next = (steps, final_step, final_callback, output_path) -> (err, data...) ->
   if err

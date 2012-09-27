@@ -1,7 +1,14 @@
 fs     = require 'fs'
 _      = require 'underscore'
 coffee = require 'coffee-script'
+api    = require './api'
 flow   = require './flow'
+
+command = api[process.argv[2]]
+
+if not command
+  console.error "Wrong command. Available commands:\n\n  #{(_.keys api).join '\n  '}\n"
+  process.exit 1
 
 recipes = []
 
@@ -25,4 +32,4 @@ cherryfile_coffee = fs.readFileSync cherryfile_path, 'utf8'
 
 coffee.run cherryfile_coffee, filename: cherryfile_path
 
-console.log recipes
+command recipes
