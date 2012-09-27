@@ -1,0 +1,23 @@
+{
+  "name": "cherry",
+  "version": "0.0.1",
+  "description": "General-purpose build system",
+  "homepage": "https://github.com/szywon/cherry",
+  "bugs": "https://github.com/szywon/cherry/issues",
+  "files": [
+    "./lib"
+  ],
+  "main": "./lib/index.js",
+  "bin": "./lib/cherry",
+  "dependencies": {
+    "underscore": "*"
+  },
+  "devDependencies": {
+    "coffee-script": "*"
+  },
+  "author": {
+    "name": "Szymon Witamborski",
+    "email": "szywon@g.pl",
+    "url": "http://szywon.pl"
+  }
+}
