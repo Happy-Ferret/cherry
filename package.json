@@ -8,7 +8,7 @@
     "./lib"
   ],
   "main": "./lib/api.js",
-  "bin": "./lib/cherry",
+  "bin": "./lib/cherry.js",
   "dependencies": {
     "underscore": "*"
   },
