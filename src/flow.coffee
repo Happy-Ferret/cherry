@@ -3,7 +3,6 @@ _  = require 'underscore'
 
 flow_next = (steps, final_step, final_callback, output_path) -> (err, data...) ->
   if err
-    # console.error "Error while building #{output_path}", err.stack or err
     final_callback err, data...
   else if steps.length
     callback = flow_next steps[1..], final_step, final_callback, output_path
