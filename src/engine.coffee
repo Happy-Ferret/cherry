@@ -33,7 +33,7 @@ build_one = (output_path, outputs) ->
   else
     console.log "Target #{output_path} is waiting for #{output.awaiting.join ', '}"
 
-dep_tree = (recipes, paths, outputs = {}) ->
+dep_tree = (callback, recipes, paths, outputs = {}) ->
   new_paths = []
   for recipe in recipes when typeof recipe.run is 'function'
     input_pattern  = translate_input_pattern recipe.in
@@ -44,9 +44,11 @@ dep_tree = (recipes, paths, outputs = {}) ->
     for input_path in matching_paths
       output_path = input_path.replace input_pattern, output_pattern
       new_paths.push output_path
+
       if not outputs[output_path]
         outputs[output_path] = recipe: recipe, deps: [], nexts: [], awaiting: []
       output = outputs[output_path]
+
       deps = [input_path, (recipe.dep? input_path) or []...]
 
       # Interdepencies are discovered here:
@@ -54,12 +56,13 @@ dep_tree = (recipes, paths, outputs = {}) ->
         if outputs[dep]
           outputs[dep].nexts.push output_path
           output.awaiting.push dep
+
       output.deps.push deps...
 
   if new_paths.length > 0
-    dep_tree recipes, new_paths, outputs
+    dep_tree callback, recipes, new_paths, outputs
   else
-    outputs
+    callback outputs
 
 build = (outputs) ->
   for own output_path of outputs
