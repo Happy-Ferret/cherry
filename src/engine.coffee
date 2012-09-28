@@ -33,7 +33,6 @@ build_one = (output_path, outputs) ->
   else
     console.log "Target #{output_path} is waiting for #{output.awaiting.join ', '}"
 
-# TODO: getting deps by get_deps should be integrated here before recursion
 group_outputs_inputs = (recipes, paths, outputs = {}) ->
   new_paths = []
   for recipe in recipes when typeof recipe.run is 'function'
@@ -49,6 +48,7 @@ group_outputs_inputs = (recipes, paths, outputs = {}) ->
         outputs[output_path] = recipe: recipe, deps: [], nexts: [], awaiting: []
       output = outputs[output_path]
       deps = [input_path, (recipe.dep? input_path) or []...]
+
       # Interdepencies are discovered here:
       for dep in deps
         if outputs[dep]
