@@ -1,3 +1,5 @@
+_ = require 'underscore'
+
 interdep = (deps, output_path, outputs) ->
   output = outputs[output_path]
   for dep in deps
@@ -26,7 +28,7 @@ dep_path = (callback, recipe, input_path, outputs) ->
     else if new_deps
       deps.push new_deps
 
-    output.deps.push deps...
+    output.deps = _.uniq output.deps.concat deps
     interdep deps, output_path, outputs
     callback is_new and output_path
 
