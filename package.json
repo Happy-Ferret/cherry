@@ -10,10 +10,10 @@
   "main": "./lib/api.js",
   "bin": "./lib/cherry.js",
   "dependencies": {
-    "underscore": "*"
+    "underscore": "*",
+    "coffee-script": "*"
   },
   "devDependencies": {
-    "coffee-script": "*"
   },
   "author": {
     "name": "Szymon Witamborski",
