@@ -8,41 +8,16 @@ translate_output_pattern = (pattern) ->
   count = 1
   pattern.replace /\*/g, (match) -> "$#{count++}"
 
+translate_all_patterns = (recipes) ->
+  for recipe in recipes
+    recipe.in_pattern  = translate_input_pattern recipe.in
+    recipe.out_pattern = translate_output_pattern recipe.out
+  recipes
+
 scan_dir = (path) ->
   files = fs.readdirSync path
   paths = ((path + '/' + name).replace('./', '') for name in files)
   paths.concat(scan_dir path for path in paths when fs.statSync(path).isDirectory() ...)
-
-dep_tree = (callback, recipes, paths, outputs = {}) ->
-  new_paths = []
-  for recipe in recipes when typeof recipe.run is 'function'
-    input_pattern  = translate_input_pattern recipe.in
-    output_pattern = translate_output_pattern recipe.out
-    matching_paths = paths.filter (path) -> input_pattern.test(path)
-
-    # Group all inputs by their outputs.
-    for input_path in matching_paths
-      output_path = input_path.replace input_pattern, output_pattern
-      new_paths.push output_path
-
-      if not outputs[output_path]
-        outputs[output_path] = recipe: recipe, deps: [], nexts: [], awaiting: []
-      output = outputs[output_path]
-
-      deps = [input_path, (recipe.dep? input_path) or []...]
-
-      # Interdepencies are discovered here:
-      for dep in deps
-        if outputs[dep]
-          outputs[dep].nexts.push output_path
-          output.awaiting.push dep
-
-      output.deps.push deps...
-
-  if new_paths.length > 0
-    dep_tree callback, recipes, new_paths, outputs
-  else
-    callback outputs
 
 gen_final_callback = (output_path, outputs) -> (err) ->
   output = outputs[output_path]
@@ -85,7 +60,7 @@ purify = (recipes, paths) ->
 
 module.exports =
   scan_dir: scan_dir
-  dep_tree: dep_tree
+  translate_all_patterns: translate_all_patterns
   build:    build
   clean:    clean
   purify:   purify

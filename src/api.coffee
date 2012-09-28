@@ -1,9 +1,10 @@
-engine = require './engine'
+engine   = require './engine'
+dep_tree = require './dep_tree'
 
 start_dir = '.'
 
 with_full_tree = (action) -> (recipes) ->
-  engine.dep_tree action, recipes, engine.scan_dir start_dir
+  dep_tree action, (engine.translate_all_patterns recipes), engine.scan_dir start_dir
 
 build = with_full_tree engine.build
 dump  = with_full_tree console.log
