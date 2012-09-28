@@ -47,28 +47,19 @@ group_outputs_inputs = (recipes, paths, outputs = {}) ->
       new_paths.push output_path
       if not outputs[output_path]
         outputs[output_path] = recipe: recipe, deps: [], nexts: [], awaiting: []
-      outputs[output_path].deps.push input_path
+      output = outputs[output_path]
+      deps = [input_path, (recipe.dep? input_path) or []...]
+      # Interdepencies are discovered here:
+      for dep in deps
+        if outputs[dep]
+          outputs[dep].nexts.push output_path
+          output.awaiting.push dep
+      output.deps.push deps...
 
   if new_paths.length > 0
     group_outputs_inputs recipes, new_paths, outputs
   else
     outputs
-
-get_recipe_deps = (recipe, input_paths) ->
-  _.uniq if typeof recipe.get_deps is 'function'
-    input_paths.concat (recipe.get_deps input_path for input_path in input_paths)...
-  else
-    input_paths
-
-get_outputs_deps = (outputs) ->
-  for own output_path, output of outputs
-    deps = output.deps = get_recipe_deps output.recipe, output.deps # TODO: try catch
-    # Interdepencies are discovered here:
-    for dep in deps
-      if outputs[dep]
-        outputs[dep].nexts.push output_path
-        output.awaiting.push dep
-  outputs
 
 build = (outputs) ->
   for own output_path of outputs
@@ -92,7 +83,6 @@ purify = (recipes, paths) ->
 module.exports =
   scan_dir:             scan_dir
   group_outputs_inputs: group_outputs_inputs
-  get_outputs_deps:     get_outputs_deps
   build:                build
   clean:                clean
   purify:               purify
