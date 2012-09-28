@@ -33,7 +33,7 @@ build_one = (output_path, outputs) ->
   else
     console.log "Target #{output_path} is waiting for #{output.awaiting.join ', '}"
 
-group_outputs_inputs = (recipes, paths, outputs = {}) ->
+dep_tree = (recipes, paths, outputs = {}) ->
   new_paths = []
   for recipe in recipes when typeof recipe.run is 'function'
     input_pattern  = translate_input_pattern recipe.in
@@ -57,7 +57,7 @@ group_outputs_inputs = (recipes, paths, outputs = {}) ->
       output.deps.push deps...
 
   if new_paths.length > 0
-    group_outputs_inputs recipes, new_paths, outputs
+    dep_tree recipes, new_paths, outputs
   else
     outputs
 
@@ -81,8 +81,8 @@ purify = (recipes, paths) ->
   rm path for path in matching_paths
 
 module.exports =
-  scan_dir:             scan_dir
-  group_outputs_inputs: group_outputs_inputs
-  build:                build
-  clean:                clean
-  purify:               purify
+  scan_dir: scan_dir
+  dep_tree: dep_tree
+  build:    build
+  clean:    clean
+  purify:   purify
