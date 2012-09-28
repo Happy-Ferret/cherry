@@ -2,17 +2,12 @@ engine = require './engine'
 
 start_dir = '.'
 
-full_tree = (recipes) ->
-  engine.group_outputs_inputs recipes, engine.scan_dir start_dir
+with_full_tree = (action) -> (recipes) ->
+  action engine.group_outputs_inputs recipes, engine.scan_dir start_dir
 
-build = (recipes) ->
-  engine.build full_tree recipes
-
-dump = (recipes) ->
-  console.log full_tree recipes
-
-clean = (recipes) ->
-  engine.clean engine.group_outputs_inputs recipes, engine.scan_dir start_dir
+build = with_full_tree engine.build
+dump  = with_full_tree console.log
+clean = with_full_tree engine.clean
 
 purify = (recipes) ->
   engine.purify recipes, engine.scan_dir start_dir
