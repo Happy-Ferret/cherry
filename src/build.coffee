@@ -16,7 +16,10 @@ build_one = (output_path, outputs) ->
   if output.awaiting.length is 0
     console.log "Building #{output_path} from #{output.deps.join(', ')}"
     callback = gen_final_callback output_path, outputs
-    output.recipe.run callback, output_path, output.deps... # TODO: try catch
+    try
+      output.recipe.run callback, output_path, output.deps...
+    catch error
+      callback error
   else
     console.log "Target #{output_path} is waiting for #{output.awaiting.join ', '}"
 
