@@ -1,5 +1,4 @@
-fs                        = require 'fs'
-{in_pattern, out_pattern} = require './discovery'
+fs = require 'fs'
 
 in_pattern = (pattern) ->
   new RegExp "^#{pattern.replace /\*./g, (match) -> "([^#{match[1]}./]+)\\#{match[1]}"}$"

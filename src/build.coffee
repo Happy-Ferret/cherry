@@ -1,4 +1,3 @@
-fs = require 'fs'
 _  = require 'underscore'
 
 gen_final_callback = (output_path, outputs) -> (err) ->
