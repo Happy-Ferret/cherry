@@ -3,7 +3,7 @@ _ = require 'underscore'
 interdep = (deps, output_path, outputs) ->
   output = outputs[output_path]
   for dep in deps
-    if outputs[dep]
+    if (outputs[dep]?.nexts?.indexOf output_path) is -1
       outputs[dep].nexts.push output_path
       output.awaiting.push dep
 
