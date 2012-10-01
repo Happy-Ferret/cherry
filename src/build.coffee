@@ -1,13 +1,11 @@
 _                 = require 'underscore'
+watch             = require './watch'
 {needs_recompile} = require './discovery'
 
-gen_final_callback = (output_path, outputs) -> (err) ->
+done = (output_path, outputs) ->
   output = outputs[output_path]
-  if err
-    console.error "Error while building #{output_path}", err.stack or err
-  else
-    console.log "Built #{output_path}"
-    build_nexts output_path, outputs
+  output.watchers ?= watch output_path, outputs, build_one
+  build_nexts output_path, outputs
 
 build_nexts = (output_path, outputs) ->
   output = outputs[output_path]
@@ -16,8 +14,18 @@ build_nexts = (output_path, outputs) ->
     next.awaiting = _.without next.awaiting, output_path
     build_one next_path, outputs
 
+gen_final_callback = (output_path, outputs) -> (err) ->
+  output = outputs[output_path]
+  if err
+    console.error "Error while building #{output_path}", err.stack or err
+  else
+    console.log "Built #{output_path}"
+    done output_path, outputs
+
 build_one = (output_path, outputs) ->
   output = outputs[output_path]
+
+  output.building = true
 
   if output.awaiting.length isnt 0
     console.log "Target #{output_path} is waiting for #{output.awaiting.join ', '}"
@@ -31,7 +39,7 @@ build_one = (output_path, outputs) ->
 
     if not recompile
       console.log "Target #{output_path} is already up to date."
-      build_nexts output_path, outputs
+      done output_path, outputs
     else
       console.log "Building #{output_path} from #{output.deps.join(', ')}"
       callback = gen_final_callback output_path, outputs
