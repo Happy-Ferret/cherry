@@ -18,7 +18,7 @@ recipe
 jsl_args = ['-nologo', '-nosummary', '-nofilelisting',
             '-conf', 'node_modules/coffee-script/extras/jsl.conf']
 
-gather_output = () ->
+output_gatherer = () ->
   data = []
   getter = (new_data) -> data.push new_data
   getter.get_output = () -> return data.join ''
@@ -29,14 +29,14 @@ recipe
   out: 'lib/*.js-phony'
   run: (callback, output_path, input_path) ->
     jsl = spawn 'jsl', jsl_args.concat ['-process', input_path]
-    stdout_gather = gather_output()
-    stderr_gather = gather_output()
-    jsl.stdout.on 'data', stdout_gather
-    jsl.stderr.on 'data', stderr_gather
+    stdout_gatherer = output_gatherer()
+    stderr_gatherer = output_gatherer()
+    jsl.stdout.on 'data', stdout_gatherer
+    jsl.stderr.on 'data', stderr_gatherer
     jsl.on 'exit', (code) ->
-      out_str = stdout_gather.get_output()
+      out_str = stdout_gatherer.get_output()
       console.log out_str if out_str
       if code
-        callback stderr_gather.get_output()
+        callback stderr_gatherer.get_output()
       else
         callback()
