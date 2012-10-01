@@ -1,4 +1,6 @@
-fs = require 'fs'
+fs       = require 'fs'
+_        = require 'underscore'
+{do_all} = require './flow'
 
 in_pattern = (pattern) ->
   new RegExp "^#{pattern.replace /\*./g, (match) -> "([^#{match[1]}./]+)\\#{match[1]}"}$"
@@ -18,8 +20,35 @@ scan_dir = (path) ->
   paths = ((path + '/' + name).replace('./', '') for name in files)
   paths.concat(scan_dir path for path in paths when fs.statSync(path).isDirectory() ...)
 
+needs_recompile = (output_path, input_paths..., callback) ->
+  check = (err, stats...) ->
+    if err
+      callback err
+      return
+
+    output_mtime = stats.shift().mtime
+    if not output_mtime
+      callback null, true
+      return
+
+    for mtime in _.pluck stats, 'mtime'
+      if not mtime or mtime > output_mtime
+        callback null, true
+        return
+    callback null, false
+
+  check_all = do_all (callback, path) ->
+    fs.exists path, (exists) ->
+      if exists
+        fs.stat path, callback
+      else
+        callback null, {}
+
+  check_all check, output_path, input_paths...
+
 module.exports =
-  in_pattern:  in_pattern
-  out_pattern: out_pattern
-  expand:      expand
-  scan_dir:    scan_dir
+  in_pattern:      in_pattern
+  out_pattern:     out_pattern
+  expand:          expand
+  scan_dir:        scan_dir
+  needs_recompile: needs_recompile
