@@ -2,10 +2,16 @@ _ = require 'underscore'
 
 interdep = (deps, output_path, outputs) ->
   output = outputs[output_path]
+
   for dep in deps
     if (outputs[dep]?.nexts?.indexOf output_path) is -1
       outputs[dep].nexts.push output_path
       output.awaiting.push dep
+
+  for own other_output_path, other_output of outputs
+    if (other_output.deps.indexOf output_path) isnt -1 and (other_output.awaiting.indexOf output_path) is -1
+      output.nexts.push other_output_path
+      other_output.awaiting.push output_path
 
 dep_path = (callback, recipe, input_path, outputs) ->
   output_path = input_path.replace recipe.in_pattern, recipe.out_pattern
