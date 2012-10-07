@@ -36,7 +36,7 @@ dep_path = (callback, recipe, input_path, outputs) ->
 
     output.deps = _.uniq output.deps.concat deps
     interdep deps, output_path, outputs
-    callback is_new and output_path
+    callback is_new, output_path
 
   if typeof recipe.dep is 'function'
     try
@@ -49,10 +49,10 @@ dep_path = (callback, recipe, input_path, outputs) ->
 dep_tree = (callback, recipes, input_paths, outputs = {}) ->
   to_go = 0
 
-  check = (new_path) ->
+  check = (is_new, output_path) ->
     --to_go
-    if new_path
-      scan new_path
+    if is_new
+      scan output_path
     if to_go is 0
       callback outputs
 
