@@ -1,10 +1,8 @@
 _                 = require 'underscore'
-watch             = require './watch'
 {needs_recompile} = require './discovery'
 
 done = (output_path, outputs) ->
   output = outputs[output_path]
-  output.watchers ?= watch output_path, outputs, build_one
   build_nexts output_path, outputs
 
 build_nexts = (output_path, outputs) ->
