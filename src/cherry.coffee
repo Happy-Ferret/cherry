@@ -3,6 +3,7 @@ _      = require 'underscore'
 coffee = require 'coffee-script'
 api    = require './api'
 flow   = require './flow'
+spawn  = require './spawn'
 
 candidates = [
   'Cherryfile'
@@ -35,7 +36,7 @@ if not met_requirements then return 1
 recipes = []
 recipe = (recipe) -> recipes.push recipe
 
-_.extend global, flow, recipe: recipe
+_.extend global, flow, {recipe: recipe, spawn: spawn}
 
 cherryfile_coffee = fs.readFileSync cherryfile_path, 'utf8'
 coffee.run cherryfile_coffee, filename: cherryfile_path
