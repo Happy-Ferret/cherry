@@ -22,7 +22,10 @@ dep_path = (callback, recipe, input_path, outputs) ->
 
   output = outputs[output_path]
 
-  deps = [input_path]
+  alsos = for also in recipe.also_patterns
+    input_path.replace recipe.in_pattern, also
+
+  deps = [input_path].concat alsos
 
   gather_deps = (error, new_deps) ->
     if error

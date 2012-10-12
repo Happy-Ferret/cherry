@@ -13,6 +13,9 @@ expand = (recipes) ->
   for recipe in recipes
     recipe.in_pattern  = in_pattern recipe.in
     recipe.out_pattern = out_pattern recipe.out
+    recipe.also ?= []
+    recipe.also_patterns = for also in recipe.also
+      out_pattern also
   recipes
 
 scan_dir = (path) ->
