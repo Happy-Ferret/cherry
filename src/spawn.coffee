@@ -15,4 +15,11 @@ spawn = (command, args, callback) ->
   child.on 'exit', (code) ->
     callback code, stdout.get_output(), stderr.get_output()
 
+spawn.default = (callback) -> (code, stdout, stderr) ->
+  console.log stdout if stdout
+  if code
+    callback stderr
+  else
+    callback()
+
 module.exports = spawn
