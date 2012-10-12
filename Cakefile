@@ -1,6 +1,7 @@
 coffee  = require 'coffee-script'
 
 bin_line = '#!/usr/bin/env node'
+npm = if process.platform is 'win32' then 'npm.cmd' else 'npm'
 
 recipe
   in:  'src/cherry.coffee'
@@ -21,9 +22,10 @@ recipe
   in:  'lib/*.js'
   out: 'lib/*.js-phony'
   run: (callback, output_path, input_path) ->
-    spawn 'jsl', (jsl_args.concat ['-process', input_path]), (code, stdout, stderr) ->
-      console.log stdout if stdout
-      if code
-        callback stderr
-      else
-        callback()
+    spawn 'jsl', (jsl_args.concat ['-process', input_path]), spawn.default callback
+
+recipe
+  in:  'lib/*.js-phony'
+  out: 'link-local'
+  run: (callback) ->
+    spawn npm, ['link'], spawn.default callback
