@@ -42,7 +42,7 @@ build_one = (output_path, outputs) ->
       console.log "Building #{output_path} from #{output.deps.join(', ')}"
       callback = gen_final_callback output_path, outputs
       try
-        output.recipe.run callback, output_path, output.deps...
+        output.recipe.run.call output, output.deps, callback
       catch error
         callback error
 

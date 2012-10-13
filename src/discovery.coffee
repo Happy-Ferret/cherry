@@ -24,7 +24,7 @@ scan_dir = (path) ->
   paths.concat(scan_dir path for path in paths when fs.statSync(path).isDirectory() ...)
 
 needs_recompile = (output_path, input_paths..., callback) ->
-  check = (err, stats...) ->
+  check = (err, stats) ->
     if err
       callback err
       return
@@ -40,14 +40,14 @@ needs_recompile = (output_path, input_paths..., callback) ->
         return
     callback null, false
 
-  check_all = do_all (callback, path) ->
+  check_all = do_all (path, callback) ->
     fs.exists path, (exists) ->
       if exists
         fs.stat path, callback
       else
         callback null, {}
 
-  check_all check, output_path, input_paths...
+  check_all.call null, [output_path, input_paths...], check
 
 module.exports =
   in_pattern:      in_pattern

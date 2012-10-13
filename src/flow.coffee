@@ -1,61 +1,62 @@
 fs = require 'fs'
 _  = require 'underscore'
 
-flow_next = (steps, final_step, final_callback, output_path) -> (err, data...) ->
+flow_next = (output, steps, final_callback) -> (err, data) ->
   if err
-    final_callback err, data...
-  else if steps.length
-    callback = flow_next steps[1..], final_step, final_callback, output_path
+    final_callback err
+    return
+
+  if steps.length > 0
     try
-      steps[0] callback, data...
-    catch err
-      callback err
-  else if final_step
-    final_step (flow_next [], null, final_callback), output_path, data...
+      steps[0].call output, data, (flow_next output, steps[1..], final_callback)
+    catch ex
+      final_callback ex
   else
-    final_callback null, data...
+    final_callback null, data
 
-flow = (steps..., final_step) -> (final_callback, output_path, data...) ->
-  (flow_next steps, final_step, final_callback, output_path) null, data...
+flow = (steps...) -> (data, final_callback) ->
+  (flow_next this, steps, final_callback) null, data
 
-do_all = (iterator) -> (callback, data...) ->
+do_all = (iterator) -> (data, callback) ->
   results = []
   got = 0
   valid = true
+
   check = (i) -> (err, result) ->
     return if not valid
     if err
+      valid = false
       callback err
       return
     results[i] = result
     got++
     if got is data.length
-      callback null, results...
-  for datum, i in data
-    iterator (check i), datum
+      callback null, results
 
-read_one = (encoding) -> (callback, input_path) ->
+  for datum, i in data
+    try
+      iterator.call this, datum, (check i)
+    catch e
+      (check i) e
+
+read_one = (encoding) -> (input_path, callback) ->
   fs.readFile input_path, encoding, callback
 
 read = (encoding) -> do_all read_one encoding
 
-save = (encoding) -> (callback, output_path, data) ->
-  fs.writeFile output_path, data, encoding, callback
+save = (encoding) -> (data, callback) ->
+  fs.writeFile this.path, data, encoding, callback
 
-compile = (compiler, args...) -> (callback, sources...) ->
-  results = []
-  try
-    results = (compiler src, args... for src in sources)
-  catch err
-    error = err
-  finally
-    callback error, results...
+compile_one = (compiler, args...) -> (src, callback) ->
+  callback null, (compiler src, args...)
 
-join = (glue = '\n') -> (callback, contents...) ->
-  callback null, contents.join glue
+compile = (compiler, args...) -> do_all (compile_one compiler, args...)
 
-take = (amount) -> (callback, data...) ->
-  callback null, data[..amount]...
+join = (glue = '\n') -> (data, callback) ->
+  callback null, data.join glue
+
+take = (amount) -> (data, callback) ->
+  callback null, data[..amount]
 
 module.exports = _.extend flow,
   flow:    flow

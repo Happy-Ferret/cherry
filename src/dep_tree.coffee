@@ -18,7 +18,12 @@ dep_path = (callback, recipe, input_path, outputs) ->
 
   is_new = not outputs[output_path]
   if is_new
-    outputs[output_path] = recipe: recipe, deps: [], nexts: [], awaiting: []
+    outputs[output_path] =
+      path:     output_path
+      recipe:   recipe
+      deps:     []
+      nexts:    []
+      awaiting: []
 
   output = outputs[output_path]
 
