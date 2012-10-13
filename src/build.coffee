@@ -29,22 +29,23 @@ build_one = (output_path, outputs) ->
     console.log "Target #{output_path} is waiting for #{output.awaiting.join ', '}"
     return
 
-  needs_recompile output_path, output.deps..., (err, recompile) ->
+  needs_recompile output, (err, recompile) ->
     if err
       console.error "Error while checking dates of deps for #{output_path}:"
       console.error err.stack or err
       return
 
-    if not recompile
-      console.log "Target #{output_path} is already up to date."
-      done output_path, outputs
-    else
+    if recompile
       console.log "Building #{output_path} from #{output.deps.join(', ')}"
       callback = gen_final_callback output_path, outputs
       try
         output.recipe.run.call output, output.deps, callback
       catch error
         callback error
+
+    else
+      console.log "Target #{output_path} is already up to date."
+      done output_path, outputs
 
 build = (outputs) ->
   for own output_path of outputs

@@ -23,7 +23,7 @@ scan_dir = (path) ->
   paths = ((path + '/' + name).replace('./', '') for name in files)
   paths.concat(scan_dir path for path in paths when fs.statSync(path).isDirectory() ...)
 
-needs_recompile = (output_path, input_paths..., callback) ->
+needs_recompile = (output, callback) ->
   check = (err, stats) ->
     if err
       callback err
@@ -47,7 +47,7 @@ needs_recompile = (output_path, input_paths..., callback) ->
       else
         callback null, {}
 
-  check_all.call null, [output_path, input_paths...], check
+  check_all.call null, [output.path, output.deps...], check
 
 module.exports =
   in_pattern:      in_pattern
