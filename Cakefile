@@ -21,11 +21,11 @@ jsl_args = ['-nologo', '-nosummary', '-nofilelisting',
 recipe
   in:  'lib/*.js'
   out: 'lib/*.js-phony'
-  run: (callback, output_path, input_path) ->
-    spawn 'jsl', (jsl_args.concat ['-process', input_path]), spawn.default callback
+  run: (deps, callback) ->
+    spawn 'jsl', (jsl_args.concat ['-process', deps[0]]), spawn.default callback
 
 recipe
   in:  'lib/*.js-phony'
   out: 'link-local'
-  run: (callback) ->
+  run: (deps, callback) ->
     spawn npm, ['link'], spawn.default callback
