@@ -42,7 +42,7 @@ dep_path = (callback, recipe, input_path, outputs) ->
     else if new_deps
       deps.push new_deps
 
-    output.deps = _.uniq output.deps.concat deps
+    output.deps = _.uniq _.flatten [output.deps, deps]
     interdep deps, output_path, outputs
     callback is_new, output_path
 
