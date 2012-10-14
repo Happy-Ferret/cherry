@@ -48,7 +48,7 @@ dep_path = (callback, recipe, input_path, outputs) ->
 
   if typeof recipe.dep is 'function'
     try
-      recipe.dep gather_deps, input_path
+      recipe.dep (_.clone deps), gather_deps
     catch err
       gather_deps err
   else
