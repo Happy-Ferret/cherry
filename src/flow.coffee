@@ -43,13 +43,22 @@ do_all = (iterator) -> (data, callback) ->
     catch e
       (check i) e
 
+storage = {}
+
 read_one = (encoding) -> (input_path, callback) ->
-  fs.readFile input_path, encoding, callback
+  if _.has storage, input_path
+    callback null, storage[input_path]
+  else
+    fs.readFile input_path, encoding, callback
 
 read = (encoding) -> do_all read_one encoding
 
 save = (encoding) -> (data, callback) ->
   fs.writeFile this.path, data[0], encoding, callback
+
+remember = (data, callback) ->
+  storage[this.path] = data[0]
+  callback null, data
 
 compile_one = (compiler, args...) -> (src, callback) ->
   callback null, (compiler.call this, src, args...)
