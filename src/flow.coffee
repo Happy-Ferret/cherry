@@ -49,7 +49,7 @@ read_one = (encoding) -> (input_path, callback) ->
 read = (encoding) -> do_all read_one encoding
 
 save = (encoding) -> (data, callback) ->
-  fs.writeFile this.path, data, encoding, callback
+  fs.writeFile this.path, data[0], encoding, callback
 
 compile_one = (compiler, args...) -> (src, callback) ->
   callback null, (compiler src, args...)
