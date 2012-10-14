@@ -1,5 +1,32 @@
-_                 = require 'underscore'
-{needs_recompile} = require './discovery'
+fs       = require 'fs'
+_        = require 'underscore'
+{do_all} = require './flow'
+
+needs_recompile = (output, callback) ->
+  check = (err, stats) ->
+    if err
+      callback err
+      return
+
+    output_mtime = stats.shift().mtime
+    if not output_mtime
+      callback null, true
+      return
+
+    for mtime in _.pluck stats, 'mtime'
+      if not mtime or mtime > output_mtime
+        callback null, true
+        return
+    callback null, false
+
+  check_all = do_all (path, callback) ->
+    fs.exists path, (exists) ->
+      if exists
+        fs.stat path, callback
+      else
+        callback null, {}
+
+  check_all.call null, [output.path, output.deps...], check
 
 done = (output_path, outputs) ->
   output = outputs[output_path]
