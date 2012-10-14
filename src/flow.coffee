@@ -52,9 +52,9 @@ save = (encoding) -> (data, callback) ->
   fs.writeFile this.path, data[0], encoding, callback
 
 compile_one = (compiler, args...) -> (src, callback) ->
-  callback null, (compiler src, args...)
+  callback null, (compiler.call this, src, args...)
 
-compile = (compiler, args...) -> do_all (compile_one compiler, args...)
+compile = (compiler, args...) -> do_all (compile_one.call this, compiler, args...)
 
 join = (glue = '\n') -> (data, callback) ->
   callback null, data.join glue
