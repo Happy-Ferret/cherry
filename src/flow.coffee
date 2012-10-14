@@ -67,7 +67,7 @@ compile_one = (compiler, args...) -> (src, callback) ->
 compile = (compiler, args...) -> do_all (compile_one.call this, compiler, args...)
 
 join = (glue = '\n') -> (data, callback) ->
-  callback null, data.join glue
+  callback null, [data.join glue]
 
 filter = (pattern) ->
   if typeof pattern is 'string'
@@ -85,7 +85,7 @@ filter = (pattern) ->
     callback null, data.filter tester
 
 take = (amount) -> (data, callback) ->
-  callback null, data[..amount]
+  callback null, data.slice(0, amount)
 
 module.exports = _.extend flow,
   flow:     flow
