@@ -1,5 +1,6 @@
-fs = require 'fs'
-_  = require 'underscore'
+fs           = require 'fs'
+_            = require 'underscore'
+{in_pattern} = require './discovery'
 
 flow_next = (output, steps, final_callback) -> (err, data) ->
   if err
@@ -68,14 +69,31 @@ compile = (compiler, args...) -> do_all (compile_one.call this, compiler, args..
 join = (glue = '\n') -> (data, callback) ->
   callback null, data.join glue
 
+filter = (pattern) ->
+  if typeof pattern is 'string'
+    pattern = in_pattern pattern
+
+  if pattern instanceof RegExp
+    tester = (x) -> pattern.test x
+  else if typeof pattern is 'function'
+    tester = pattern
+  else
+    tester = -> true
+  console.log pattern, tester.toString()
+
+  (data, callback) ->
+    callback null, data.filter tester
+
 take = (amount) -> (data, callback) ->
   callback null, data[..amount]
 
 module.exports = _.extend flow,
-  flow:    flow
-  do_all:  do_all
-  read:    read
-  save:    save
-  compile: compile
-  join:    join
-  take:    take
+  flow:     flow
+  do_all:   do_all
+  read:     read
+  save:     save
+  compile:  compile
+  join:     join
+  take:     take
+  remember: remember
+  filter:   filter
