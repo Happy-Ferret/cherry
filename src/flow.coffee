@@ -18,6 +18,10 @@ flow = (steps...) -> (data, final_callback) ->
   (flow_next this, steps, final_callback) null, data
 
 do_all = (iterator) -> (data, callback) ->
+  if data.length < 1
+    callback null, []
+    return
+
   results = []
   got = 0
   valid = true
