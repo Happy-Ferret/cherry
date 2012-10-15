@@ -79,7 +79,6 @@ filter = (pattern) ->
     tester = pattern
   else
     tester = -> true
-  console.log pattern, tester.toString()
 
   (data, callback) ->
     callback null, data.filter tester
