@@ -1,5 +1,6 @@
 {inspect}          = require 'util'
 {build, build_one} = require './build'
+watch              = require './watch'
 dep_tree           = require './dep_tree'
 {clean, purify}    = require './clean'
 {scan_dir, expand} = require './discovery'
@@ -13,6 +14,7 @@ module.exports =
   commands:
     clean: clean
     build: build
+    watch: watch
     dump:  (outputs, callback) ->
       console.log inspect outputs, false, 4, color_output
       callback()

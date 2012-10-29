@@ -1,4 +1,5 @@
-fs = require 'fs'
+fs          = require 'fs'
+{build_one} = require './build'
 
 # Seems that on Windows fs.watch invokes callback two times.
 double_call_workaround = (output_path, outputs, callback) ->
@@ -9,7 +10,7 @@ double_call_workaround = (output_path, outputs, callback) ->
 
 # Watch depenedencies of a target. Triger callback on change of any of
 # dependencies.
-deps = (output_path, outputs, callback) ->
+watch_deps = (output_path, outputs, callback) ->
   output = outputs[output_path]
   for path in output.deps
     if not outputs[path] # Only if not an interdepedendency
@@ -23,5 +24,8 @@ dir = (path, recipes, outputs, callback) ->
   #    dep_path(path) which gives matched output_path
   # 3. callback output_path, outputs
 
-module.exports =
-  deps: deps
+watch = (outputs) ->
+  for own output_path, output of outputs
+    watch_deps output_path, outputs, build_one
+
+module.exports = watch
