@@ -11,16 +11,16 @@ check_conditions = (candidates, callback) ->
   errors = []
 
   if not cherryfile_path
-    console.error "Need at least one of those files with recipes:\n\n  #{candidates.join '\n  '}\n"
+    errors.push "Need at least one of those files with recipes:\n\n  #{candidates.join '\n  '}\n"
 
   commands = (for name in process.argv[2..]
     fn = api.commands[name]
     if not fn
-      console.error "Command #{name} doesn't exist."
+      errors.push "Command #{name} doesn't exist."
     fn)
 
   if commands.length is 0
-    console.error "No command given. Need at least one of those:\n\n  #{(_.keys api.commands).join '\n  '}\n"
+    errors.push "No command given. Need at least one of those:\n\n  #{(_.keys api.commands).join '\n  '}\n"
 
   callback (errors.length and errors.join '\n'), [cherryfile_path, commands]
 
