@@ -17,10 +17,13 @@ expand = (recipes) ->
       out_pattern also
   recipes
 
-scan_dir = (path) ->
+scan_dir = (path, callback) ->
   files = fs.readdirSync path
   paths = ((path + '/' + name).replace('./', '') for name in files)
-  paths.concat(scan_dir path for path in paths when fs.statSync(path).isDirectory() ...)
+  all_paths = paths.concat(scan_dir path for path in paths when fs.statSync(path).isDirectory() ...)
+  if callback
+    callback null, all_paths
+  all_paths
 
 module.exports =
   in_pattern:  in_pattern

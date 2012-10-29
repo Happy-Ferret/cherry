@@ -28,26 +28,33 @@ needs_recompile = (output, callback) ->
 
   check_all.call null, [output.path, output.deps...], check
 
-done = (output_path, outputs) ->
-  output = outputs[output_path]
-  build_nexts output_path, outputs
-
-build_nexts = (output_path, outputs) ->
+build_nexts = (output_path, outputs, built_all_callback) ->
   output = outputs[output_path]
   for next_path in output.nexts
     next = outputs[next_path]
     next.awaiting = _.without next.awaiting, output_path
-    build_one next_path, outputs
+    build_one next_path, outputs, built_all_callback
 
-gen_final_callback = (output_path, outputs) -> (err) ->
+gen_final_callback = (output_path, outputs, built_all_callback) -> (err) ->
   output = outputs[output_path]
   if err
     console.error "Error while building #{output_path}", err.stack or err
   else
     console.log "Built #{output_path}"
-    done output_path, outputs
+    done output_path, outputs, built_all_callback
 
-build_one = (output_path, outputs) ->
+building = 0
+
+done = (output_path, outputs, built_all_callback) ->
+  output = outputs[output_path]
+  build_nexts output_path, outputs, built_all_callback
+  building--
+  if building is 0
+    console.log 'Built all targets.'
+    if typeof built_all_callback is 'function'
+      built_all_callback()
+
+build_one = (output_path, outputs, built_all_callback) ->
   output = outputs[output_path]
 
   output.building = true
@@ -55,6 +62,8 @@ build_one = (output_path, outputs) ->
   if output.awaiting.length isnt 0
     console.log "Target #{output_path} is waiting for #{output.awaiting.join ', '}"
     return
+
+  building++
 
   needs_recompile output, (err, recompile) ->
     if err
@@ -64,7 +73,7 @@ build_one = (output_path, outputs) ->
 
     if recompile
       console.log "Building #{output_path} from #{output.deps.join(', ')}"
-      callback = gen_final_callback output_path, outputs
+      callback = gen_final_callback output_path, outputs, built_all_callback
       try
         output.recipe.run.call output, output.deps, callback
       catch error
@@ -74,8 +83,10 @@ build_one = (output_path, outputs) ->
       console.log "Target #{output_path} is already up to date."
       done output_path, outputs
 
-build = (outputs) ->
+build = (outputs, callback) ->
   for own output_path of outputs
-    build_one output_path, outputs
+    build_one output_path, outputs, callback
 
-module.exports = build
+module.exports =
+  build:     build
+  build_one: build_one

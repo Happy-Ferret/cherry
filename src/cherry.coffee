@@ -5,40 +5,48 @@ api    = require './api'
 flow   = require './flow'
 spawn  = require './spawn'
 
-candidates = [
+check_conditions = (candidates, callback) ->
+  cherryfile_path = _.find candidates, fs.existsSync
+
+  errors = []
+
+  if not cherryfile_path
+    exit = true
+    console.error "Need at least one of those files with recipes:\n\n  #{candidates.join '\n  '}\n"
+
+  commands = (for name in process.argv[2..]
+    fn = api.commands[name]
+    if not fn
+      exit = true
+      console.error "Command #{name} doesn't exist."
+    fn)
+
+  if commands.length is 0
+    console.error "No command given. Need at least one of those:\n\n  #{(_.keys api.commands).join '\n  '}\n"
+
+  callback (errors.length and errors.join '\n'), [cherryfile_path, commands]
+
+run = ([cherryfile_path, commands], callback) ->
+  recipes = []
+  recipe = (recipe) -> recipes.push recipe
+
+  _.extend global, flow, {recipe: recipe, spawn: spawn}
+
+  cherryfile_coffee = fs.readFileSync cherryfile_path, 'utf8'
+  coffee.run cherryfile_coffee, filename: cherryfile_path
+
+  go = flow api.scan_dir,
+    (api.dep_tree.bind null, (api.expand recipes), {}),
+    (commands.map (cmd) ->
+      (outputs, callback) -> cmd outputs, (err) ->
+        callback err, outputs)...
+
+  go '.', callback
+
+(flow check_conditions, run) [
   'Cherryfile'
   'cherry.coffee'
   'Cakefile'
-]
-
-cherryfile_path = _.find candidates, fs.existsSync
-command = api[process.argv[2]]
-
-requirements = [
-  [ command
-    "Wrong command. Available commands:"
-    _.keys api ]
-  [ cherryfile_path
-    "Need one of the following files with recipes:",
-    candidates ]
-]
-
-met_requirements = true
-for [req, message, alternatives] in requirements
-  if not req
-    console.error message
-    if alternatives
-      console.error "\n  #{alternatives.join '\n  '}\n"
-    met_requirements = false
-
-if not met_requirements then return 1
-
-recipes = []
-recipe = (recipe) -> recipes.push recipe
-
-_.extend global, flow, {recipe: recipe, spawn: spawn}
-
-cherryfile_coffee = fs.readFileSync cherryfile_path, 'utf8'
-coffee.run cherryfile_coffee, filename: cherryfile_path
-
-command recipes
+], (err) ->
+  if err
+    console.error err.stack || err

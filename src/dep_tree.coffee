@@ -54,7 +54,7 @@ dep_path = (callback, recipe, input_path, outputs) ->
   else
     gather_deps()
 
-dep_tree = (callback, recipes, input_paths, outputs = {}) ->
+dep_tree = (recipes, outputs, input_paths, callback) ->
   to_go = 0
 
   check = (is_new, output_path) ->
@@ -62,7 +62,7 @@ dep_tree = (callback, recipes, input_paths, outputs = {}) ->
     if is_new
       scan output_path
     if to_go is 0
-      callback outputs
+      callback null, outputs
 
   scan = (paths...) ->
     for recipe in recipes
