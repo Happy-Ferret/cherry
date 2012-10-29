@@ -38,7 +38,7 @@ build_nexts = (output_path, outputs, built_all_callback) ->
 gen_final_callback = (output_path, outputs, built_all_callback) -> (err) ->
   output = outputs[output_path]
   if err
-    console.error "Error while building #{output_path}", err.stack or err
+    console.error "Error while building #{output_path}:\n", err.stack or err
   else
     console.log "Built #{output_path}"
     done output_path, outputs, built_all_callback
