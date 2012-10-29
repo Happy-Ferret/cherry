@@ -11,13 +11,11 @@ check_conditions = (candidates, callback) ->
   errors = []
 
   if not cherryfile_path
-    exit = true
     console.error "Need at least one of those files with recipes:\n\n  #{candidates.join '\n  '}\n"
 
   commands = (for name in process.argv[2..]
     fn = api.commands[name]
     if not fn
-      exit = true
       console.error "Command #{name} doesn't exist."
     fn)
 
