@@ -1,11 +1,8 @@
-{inspect}          = require 'util'
 {build}            = require './build'
 watch              = require './watch'
-dep_tree           = require './dep_tree'
+{dump} = dep_tree  = require './dep_tree'
 {clean, purify}    = require './clean'
 {scan_dir, expand} = require './discovery'
-
-color_output = process.stdout.columns > 0
 
 module.exports =
   scan_dir: scan_dir
@@ -15,6 +12,4 @@ module.exports =
     clean: clean
     build: build
     watch: watch
-    dump:  (outputs, callback) ->
-      console.log inspect outputs, false, 4, color_output
-      callback()
+    dump:  dep_tree.dump

@@ -1,4 +1,5 @@
-_ = require 'underscore'
+{inspect} = require 'util'
+_         = require 'underscore'
 
 interdep = (deps, output_path, outputs) ->
   output = outputs[output_path]
@@ -72,4 +73,16 @@ dep_tree = (recipes, outputs, input_paths, callback) ->
 
   scan input_paths...
 
-module.exports = dep_tree
+color_output = process.stdout.columns > 0
+
+dump = (outputs, callback) ->
+  for own path, output of outputs
+    str = inspect output, false, 4, color_output
+    str = str.substring(1, str.length - 2).replace(/^ {1,2}/gm, '')
+    console.log str + '\n'
+  callback()
+
+dump.help = 'Print the dependency tree'
+
+module.exports = _.extend dep_tree,
+  dump: dump
