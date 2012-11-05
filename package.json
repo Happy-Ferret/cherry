@@ -1,23 +1,21 @@
 {
-  "name": "cherry",
-  "version": "0.0.1",
+  "name":        "cherry",
+  "version":     "0.0.1",
   "description": "General-purpose build system",
-  "homepage": "https://github.com/szywon/cherry",
-  "bugs": "https://github.com/szywon/cherry/issues",
-  "files": [
+  "homepage":    "https://github.com/szywon/cherry",
+  "bugs":        "https://github.com/szywon/cherry/issues",
+  "files":       [
     "./lib"
   ],
-  "main": "./lib/api.js",
-  "bin": "./lib/cherry.js",
+  "main":         "./lib/api.js",
+  "bin":          "./lib/cherry.js",
   "dependencies": {
-    "underscore": "*",
+    "underscore":    "*",
     "coffee-script": "*"
   },
-  "devDependencies": {
-  },
   "author": {
-    "name": "Szymon Witamborski",
-    "email": "szywon@g.pl",
-    "url": "http://szywon.pl"
+    "name":  "Szymon Witamborski",
+    "email": "szywon@szywon.pl",
+    "url":   "http://szywon.pl"
   }
 }
