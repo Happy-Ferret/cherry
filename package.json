@@ -1,14 +1,14 @@
 {
   "name":        "cherry",
-  "version":     "0.0.1",
+  "version":     "0.0.2",
   "description": "General-purpose build system",
   "homepage":    "https://github.com/szywon/cherry",
   "bugs":        "https://github.com/szywon/cherry/issues",
   "files":       [
-    "./lib"
+    "lib", "COPYING"
   ],
-  "main":         "./lib/api.js",
-  "bin":          "./lib/cherry.js",
+  "main":         "lib/api.js",
+  "bin":          "lib/cherry.js",
   "dependencies": {
     "underscore":    "*",
     "coffee-script": "*"
