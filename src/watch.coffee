@@ -28,4 +28,6 @@ watch = (outputs) ->
   for own output_path, output of outputs
     watch_deps output_path, outputs, build_one
 
+watch.help = 'Watches all inputs and rebuilds outdated targets'
+
 module.exports = watch

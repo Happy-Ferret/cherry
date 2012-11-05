@@ -20,7 +20,8 @@ check_conditions = (candidates, callback) ->
     fn)
 
   if commands.length is 0
-    errors.push "No command given. Need at least one of those:\n\n  #{(_.keys api.commands).join '\n  '}\n"
+    str = ("  #{name}\t\t#{fn.help}" for own name, fn of api.commands)
+    errors.push "No command given. Need at least one of those:\n\n#{str.join '\n'}\n"
 
   callback (errors.length and errors.join '\n'), [cherryfile_path, commands]
 

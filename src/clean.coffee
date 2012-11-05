@@ -14,6 +14,8 @@ rm = (path, callback) ->
 clean = (outputs, callback) ->
   (do_all rm) (_.keys outputs), callback
 
+clean.help = 'Deletes all targets'
+
 purify = (recipes, paths, callback) ->
   matching_paths = []
   for recipe in recipes

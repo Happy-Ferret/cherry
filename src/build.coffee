@@ -87,6 +87,8 @@ build = (outputs, callback) ->
   for own output_path of outputs
     build_one output_path, outputs, callback
 
+build.help = 'Builds all targets'
+
 module.exports =
   build:     build
   build_one: build_one
