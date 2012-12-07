@@ -1,31 +1,36 @@
-coffee  = require 'coffee-script'
+coffee = require 'coffee-script'
+fs     = require 'fs'
 
 bin_line = '#!/usr/bin/env node'
 npm = if process.platform is 'win32' then 'npm.cmd' else 'npm'
 
 recipe
+  in: 'Cakefile'
+  out: 'lib'
+  run: (deps, callback) ->
+    fs.exists 'lib', (exists) ->
+      if not exists
+        fs.mkdir 'lib', callback
+      else
+        callback()
+
+recipe
   in:  'src/cherry.coffee'
   out: 'lib/cherry.js'
-  run: (flow (read 'utf8'),
+  also: ['lib']
+  run: (flow (take 1),
+             (read 'utf8'),
              (compile (src) -> "#{bin_line}\n#{coffee.compile src}"),
              (save 'utf8'))
 
 recipe
   in:  'src/*.coffee'
   out: 'lib/*.js'
-  run: (flow (read 'utf8'), (compile coffee.compile), (save 'utf8'))
-
-jsl_args = ['-nologo', '-nosummary', '-nofilelisting',
-            '-conf', 'node_modules/coffee-script/extras/jsl.conf']
+  also: ['lib']
+  run: (flow (take 1), (read 'utf8'), (compile coffee.compile), (save 'utf8'))
 
 recipe
   in:  'lib/*.js'
-  out: 'jsl lib/*.js'
-  run: (deps, callback) ->
-    spawn 'jsl', (jsl_args.concat ['-process', deps[0]]), spawn.default callback
-
-recipe
-  in:  'jsl lib/*.js'
   out: 'npm link'
   run: (deps, callback) ->
     spawn npm, ['link'], spawn.default callback
