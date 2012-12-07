@@ -17,6 +17,11 @@ interdep = (deps, output_path, outputs) ->
 dep_path = (callback, recipe, input_path, outputs) ->
   output_path = input_path.replace recipe.in_pattern, recipe.out_pattern
 
+  # TODO: check for circular deps
+  if output_path is input_path
+    callback false
+    return
+
   is_new = not outputs[output_path]
   if is_new
     outputs[output_path] =
