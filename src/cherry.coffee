@@ -1,4 +1,5 @@
 fs     = require 'fs'
+path   = require 'path'
 _      = require 'underscore'
 coffee = require 'coffee-script'
 api    = require './api'
@@ -31,8 +32,11 @@ run = ([cherryfile_path, commands], callback) ->
 
   _.extend global, flow, {recipe: recipe, spawn: spawn}
 
-  cherryfile_coffee = fs.readFileSync cherryfile_path, 'utf8'
-  coffee.run cherryfile_coffee, filename: cherryfile_path
+  if /.js$/.test(cherryfile_path)
+    require(path.resolve(cherryfile_path))
+  else
+    cherryfile_source = fs.readFileSync cherryfile_path, 'utf8'
+    coffee.run cherryfile_source, filename: cherryfile_path
 
   go = flow api.scan_dir,
     (api.dep_tree.bind null, (api.expand recipes), {}),
@@ -43,6 +47,8 @@ run = ([cherryfile_path, commands], callback) ->
   go '.', callback
 
 (flow check_conditions, run) [
+  'Recipes.js'
+  'recipes.js'
   'Cherryfile'
   'cherry.coffee'
   'Cakefile'
