@@ -1,4 +1,6 @@
 fs           = require 'fs'
+path         = require 'path'
+mkdirp       = require 'mkdirp'
 _            = require 'underscore'
 {in_pattern} = require './discovery'
 
@@ -55,7 +57,11 @@ read_one = (encoding) -> (input_path, callback) ->
 read = (encoding) -> do_all read_one encoding
 
 save = (encoding) -> (data, callback) ->
-  fs.writeFile this.path, data[0], encoding, callback
+  mkdirp path.dirname(this.path), (err) =>
+    if err
+       callback(err)
+       return   
+    fs.writeFile this.path, data[0], encoding, callback
 
 remember = (data, callback) ->
   storage[this.path] = data[0]

@@ -11,7 +11,8 @@
   "bin":          "lib/cherry.js",
   "dependencies": {
     "underscore":    "*",
-    "coffee-script": "*"
+    "coffee-script": "*",
+    "mkdirp":        "*"
   },
   "author": {
     "name":  "Szymon Witamborski",
