@@ -2,6 +2,7 @@ fs       = require 'fs'
 _        = require 'underscore'
 
 in_pattern = (pattern) ->
+  return pattern if pattern instanceof RegExp
   new RegExp "^#{pattern.replace /\*./g, (match) -> "([^#{match[1]}./]+)\\#{match[1]}"}$"
 
 out_pattern = (pattern) ->
