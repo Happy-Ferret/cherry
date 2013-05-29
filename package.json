@@ -1,6 +1,6 @@
 {
   "name":        "cherry",
-  "version":     "0.0.4",
+  "version":     "0.0.5",
   "description": "General-purpose build system",
   "homepage":    "https://github.com/szywon/cherry",
   "bugs":        "https://github.com/szywon/cherry/issues",
@@ -12,7 +12,8 @@
   "dependencies": {
     "underscore":    "*",
     "coffee-script": "*",
-    "mkdirp":        "*"
+    "mkdirp":        "*",
+    "bagpipe":       "*"
   },
   "author": {
     "name":  "Szymon Witamborski",

@@ -1,4 +1,4 @@
-fs           = require 'fs'
+fs           = require './io'
 path         = require 'path'
 mkdirp       = require 'mkdirp'
 _            = require 'underscore'
@@ -60,7 +60,7 @@ save = (encoding) -> (data, callback) ->
   mkdirp path.dirname(this.path), (err) =>
     if err
        callback(err)
-       return   
+       return
     fs.writeFile this.path, data[0], encoding, callback
 
 remember = (data, callback) ->

@@ -1,4 +1,4 @@
-fs       = require 'fs'
+fs       = require './io'
 _        = require 'underscore'
 {do_all} = require './flow'
 

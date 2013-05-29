@@ -5,16 +5,6 @@ bin_line = '#!/usr/bin/env node'
 npm = if process.platform is 'win32' then 'npm.cmd' else 'npm'
 
 recipe
-  in: 'Cakefile'
-  out: 'lib'
-  run: (deps, callback) ->
-    fs.exists 'lib', (exists) ->
-      if not exists
-        fs.mkdir 'lib', callback
-      else
-        callback()
-
-recipe
   in:  'src/cherry.coffee'
   out: 'lib/cherry.js'
   also: ['lib']

@@ -1,4 +1,4 @@
-fs     = require 'fs'
+fs     = require './io'
 path   = require 'path'
 _      = require 'underscore'
 coffee = require 'coffee-script'
